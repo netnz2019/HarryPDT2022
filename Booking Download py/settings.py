@@ -1,0 +1,7 @@
+LOGIN_USERNAME_FIELD = '//*[@id="loginname"]'
+LOGIN_PASSWORD_FIELD = '//*[@id="password"]'
+LOGIN_BUTTON = '/html/body/div[1]/div/div/div/div[2]/div[1]/div/div/div/div/div/div/form/div[3]/button'
+LOGIN_BUTTON2 = '/html/body/div[1]/div/div/div/div[2]/div[1]/div/div/div/div/div/div/form/button'
+SMS_BUTTON = '/html/body/div[1]/div/div/div/div[2]/div[1]/div/div/div/div/div/div/div[2]/a[1]'
+USERNAME = '554570'
+PASSWORD = 'Julia1968='
