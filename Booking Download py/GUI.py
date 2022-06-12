@@ -11,6 +11,8 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 import main
 import vrbo
+from multiprocessing import Process
+
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -55,12 +57,13 @@ class Ui_MainWindow(object):
 
 
 def hi():
-    print("Hey")
-
-
-    vrbo.Main()
-    main.Main("2022-5-10", "2022-12-10")
-
+    if __name__ == '__main__':
+        p1 = Process(target=main.Main())
+        p1.start()
+        p2 = Process(target=vrbo.Main())
+        p2.start()
+        p1.join()
+        p2.join()
 def formate(fro, to):
     fromyer = fro[1:5]
     frommoth = fro[7:9]

@@ -11,18 +11,46 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium import *
 import time
+import glob
+import os
 from requests_html import HTMLSession
 import pandas as pd
 from bs4 import BeautifulSoup
+import pickle
+from selenium.webdriver.chrome.options import Options
+from datetime import date
+
+def todaydate():
+    return date.today()
 
 
+def oneyear():
+    return date.today().replace(year=date.today().year + 1)
 
-def Main(fro, to):
-    options = webdriver.ChromeOptions()
-    options.headless = False
 
-    driver = webdriver.Chrome(executable_path=r'C:\Program Files (x86)\chromedriver.exe', options=options)
+def Main(fro=todaydate(), to=oneyear()):
 
+    try:
+        os.remove(r"C:\Users\harry\Desktop\Rstatements\rstatement.xls")
+    except:
+        pass
+
+    # Instantiate headless driver
+    chrome_options = Options()
+
+    # Windows path
+    chromedriver_location = "C:/Program Files (x86)/chromedriver.exe"
+    # Mac path. May have to allow chromedriver developer in os system prefs
+
+
+    chrome_options.add_argument("--headless")
+    chrome_options.add_argument("--no-sandbox")
+    chrome_options.add_argument("--disable-dev-shm-usage")
+
+    chrome_prefs = {"download.default_directory": r"C:\Users\harry\Desktop\Rstatements"}  # (windows)
+    chrome_options.experimental_options["prefs"] = chrome_prefs
+
+    driver = webdriver.Chrome(chromedriver_location, options=chrome_options)
     def Cookie(cookie):
         driver.add_cookie(cookie)
 
@@ -43,7 +71,7 @@ def Main(fro, to):
         startdate = fro
         enddate = to
 
-        download_link = 'https://admin.booking.com/fresa/extranet/reservations/download?date_type=arrival&date_to=' + enddate + '&date_from=' + startdate + '&reservation_status[]=ok&lang=xu&ses=' + ses + '&hotel_id=554570'
+        download_link = 'https://admin.booking.com/fresa/extranet/reservations/download?date_type=arrival&date_to=' + str(enddate) + '&date_from=' + str(startdate) + '&reservation_status[]=ok&lang=xu&ses=' + ses + '&hotel_id=554570'
         print('downloading from: ' + download_link)
         driver.get(download_link)
 
@@ -127,3 +155,6 @@ def Main(fro, to):
 
     login()
     print(get_cookies())
+
+
+

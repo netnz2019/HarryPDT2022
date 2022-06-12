@@ -2,7 +2,7 @@
 import csv
 import pickle
 import settings
-
+from openpyxl import Workbook
 import requests
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -23,12 +23,44 @@ from datetime import date
 
 def Main():
 
-    options = webdriver.ChromeOptions()
+    try:
+        os.remove(r"C:\Users\harry\Desktop\Rstatements\Reservations.csv")
+    except:
+        pass
 
-    options.headless = False
+    # Instantiate headless driver
+    chrome_options = Options()
+
+    # Windows path
+    chromedriver_location = "C:/Program Files (x86)/chromedriver.exe"
+    # Mac path. May have to allow chromedriver developer in os system prefs
 
 
-    driver = webdriver.Chrome(executable_path=r"C:\Program Files (x86)\chromedriver.exe", options=options)
+    #chrome_options.add_argument("--headless")
+    chrome_options.add_argument("--no-sandbox")
+    chrome_options.add_argument("--disable-dev-shm-usage")
+
+    chrome_prefs = {"download.default_directory": r"C:\Users\harry\Desktop\Rstatements"}  # (windows)
+    chrome_options.experimental_options["prefs"] = chrome_prefs
+
+    driver = webdriver.Chrome(chromedriver_location, options=chrome_options)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     def addcookes(cookies):
         for cookie in cookies:
@@ -47,64 +79,50 @@ def Main():
         driver.get(geturl(1))
         print("Webpage reached...")
         cookieJar()
-
         credintals()
-
         time.sleep(4)
-        cookies = driver.get_cookies()
-        driver.get(geturl(3))
-
-
-        driver.get('https://www.vrbo.com/en-nz/rm/reservations/page/1/sort/stay/asc/filter/reservations')
-        for Cookie in cookies:
-            driver.add_cookie(Cookie)
-        #cookieJar()
-        time.sleep(5)
         download()
-        time.sleep(15)
-        list_of_files = glob.glob('C:/Users/harry/Downloads/*.csv')
-        down = max(list_of_files, key=os.path.getctime)
+        time.sleep(10)
 
-        if lastDown == down:
-            Main()
+
+
         convert()
 
 
 
     def download():
-        dat = date.today()
-        print(dat)
-        driver.get(geturl(3))
+        today = date.today()
 
-        dowbutton = WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.XPATH, settings.DOWNBUTVR))
-        )
-        time.sleep(3)
+        oneyear = date.today().replace(year=date.today().year + 1)
 
-        dowbutton.click()
-        time.sleep(3)
-        toggle = WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.XPATH, settings.TOGGLEDVR))
-        )
+        print(date.today())
+        driver.get('https://www.vrbo.com/rm/proxies/v2/conversations/export?afterDate='+ str(today) + '&beforeDate='+ str(oneyear) + '&csrfToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbiI6IjEwY2IyMzE4NGZhZWNiN2ExN2FmMzdlN2NmMzJjOTlkMjFjYTFkMmVhMGRkMmQyNjRkYTBlMWU0NmI0YzY0ZjM5OGNiM2E4MTJmZDMyNTMxNDk0ZmZhODg1NWE4MGMyODkyMzM5MjNmYTlkZGZlYTNjNmM4MjkzMDU1ZTM1ODhjZjBkOGUxZjE1ZDQxMTEwMTcyYzRmMWMwZWVkMzg1ZTY3ZjdmMjhjNGI1YjNlODQ2Nzg3ZDVhOGI3YjJmZGI3OWJiYTE0NDFjY2YwNTg1IiwiaWF0IjoxNjU0NzMyMjM4LCJleHAiOjE2NTUzMzcwMzh9.njbcO9AQLoZlqbwkF80TcQdPo1yfH1aMbnLLzvEZw7U&druid=&reservations=true&site=homeaway_nz&status=RESERVATION_DOWNLOADABLE')
 
-        subbut = WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.XPATH, settings.SUBBUTTON))
-        )
-        time.sleep(5)
-        toggle.click()
-        time.sleep(5)
-        subbut.click()
+
 
 
 
 
 
     def convert():
-        list_of_files = glob.glob('C:/Users/harry/Downloads/*.csv')
-        latest_file = max(list_of_files, key=os.path.getctime)
-        print(latest_file)
-        read_file = pd.read_csv(latest_file)
-        read_file.to_excel(r'C:\Users\harry\PycharmProjects\pythonProject10\vrtest.xls', index=None, header=True)
+        wb = Workbook()
+        try:
+            os.remove(r"C:\Users\harry\Desktop\Rstatements\Vrbo.xls")
+        except:
+            pass
+
+        def create_workbook(path):
+            workbook = Workbook()
+            workbook.save(path)
+
+        create_workbook(r"C:\Users\harry\Desktop\Rstatements\Vrbo.xlsx")
+
+
+        read_file = pd.read_csv(r"C:\Users\harry\Desktop\Rstatements\Reservations.csv")
+        read_file.to_excel(r"C:\Users\harry\Desktop\Rstatements\Vrbo.xlsx", index=None, header=True)
+        
+
+
 
     def cookieJar():
         driver.add_cookie({"name":'bm_sv', "value":'8260E5DD57BDC9729F3E7915B099CD29~YAAQj6lgaFXF4OGAAQAA4+jOAg82a0yOJIWRL1uSed/ZmbZzPwQVHWdhkTr+rq65znk7CT0rYrvTQ+8s/S7+3kTnwMMdiScJPZ/OiUB61KO6evTWV7Ksoc12r5dEwnegMYqlHZeJ1U2iQtIVsJi2ZJ/umG3h5dzTRwhjNSW4eYDv2+jjDhttpA54Ua4U9zgl7mvCDHRUQq6NVoRP9G+r3fm0Wd8KC3UHV44AajO8wO8etw3cHcl2++LHY2RVv40=~1'})
@@ -172,4 +190,5 @@ def Main():
 
     login()
 
-Main()
+
+
