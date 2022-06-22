@@ -48,20 +48,6 @@ def Main():
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     def addcookes(cookies):
         for cookie in cookies:
             print(cookie)
