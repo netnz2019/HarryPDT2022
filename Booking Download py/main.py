@@ -2,7 +2,7 @@
 import csv
 import pickle
 import settings
-
+import format
 import requests
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -43,7 +43,7 @@ def Main(fro=todaydate(), to=oneyear()):
     # Mac path. May have to allow chromedriver developer in os system prefs
 
 
-    chrome_options.add_argument("--headless")
+    #chrome_options.add_argument("--headless")
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
 
@@ -78,7 +78,10 @@ def Main(fro=todaydate(), to=oneyear()):
         Download(download_link)
 
         print('Successfully logged in!')
+        format.main()
         return driver.get_cookies()
+
+
 
     def get_cookies():
         cookies = {}
@@ -99,6 +102,7 @@ def Main(fro=todaydate(), to=oneyear()):
 
         with open('test4.xls', 'wb') as output:
             output.write(response.content)
+
 
     def addcookies():
         #Cookie({"name": 'bkng_sso_ses', "value": "e30"})
@@ -154,7 +158,11 @@ def Main(fro=todaydate(), to=oneyear()):
 
 
     login()
+    import format
+    format.main()
     print(get_cookies())
+
+
 
 
 

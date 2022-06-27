@@ -14,13 +14,7 @@ def main():
     def delete_col(ws, column_id):
         ws.delete_cols(column_id)
 
-    def nights():
-        for i in range(ws.max_row):
-            cell = ws.cell(row=i + 2, column=5)
-            e = i + 2
-            e = str(e)
-            # print(e)
-            cell.value = "=SUM(D" + e + "-C" + e + ")"
+
 
     def tobold(list):
         for i in list:
@@ -64,7 +58,7 @@ def main():
     print(max)
     coll = "E" + str(max)
     ws.move_range("E1:" + coll, cols=-4)
-    nights()
+
     delete_col(ws, 6)
     for i in range(6):
         delete_col(ws, 9)
