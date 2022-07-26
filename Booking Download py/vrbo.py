@@ -4,6 +4,7 @@ import pickle
 import settings
 from openpyxl import Workbook
 import requests
+import vrboformat
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.options import Options
@@ -13,6 +14,7 @@ from selenium import *
 import time
 import glob
 import os
+import time
 from requests_html import HTMLSession
 import pandas as pd
 from bs4 import BeautifulSoup
@@ -21,7 +23,7 @@ from selenium.webdriver.chrome.options import Options
 from datetime import date
 
 
-def Main():
+def Main(debug=2):
 
     try:
         os.remove(r"C:\Users\harry\Desktop\Rstatements\Reservations.csv")
@@ -35,15 +37,32 @@ def Main():
     chromedriver_location = "C:/Program Files (x86)/chromedriver.exe"
     # Mac path. May have to allow chromedriver developer in os system prefs
 
-
-    #chrome_options.add_argument("--headless")
+    if debug == 0:
+        chrome_options.add_argument("--headless")
+    else:
+        pass
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
+    #chrome_options.add_argument('--user-data-dir=C:/ChromeProfile/Profile1')
 
     chrome_prefs = {"download.default_directory": r"C:\Users\harry\Desktop\Rstatements"}  # (windows)
     chrome_options.experimental_options["prefs"] = chrome_prefs
 
     driver = webdriver.Chrome(chromedriver_location, options=chrome_options)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -55,24 +74,25 @@ def Main():
 
     def login():
 
-        #file = open("DictFile.pkl", "rb")
-        #file_contents = pickle.load(file)
-        #addcookes(file_contents)
-
         list_of_files = glob.glob('C:/Users/harry/Downloads/*.csv')
-        lastDown = max(list_of_files, key=os.path.getctime)
+        #lastDown = max(list_of_files, key=os.path.getctime)
         print("Vrbo login....")
-        driver.get(geturl(1))
+        driver.get(
+            'https://www.bing.com/ck/a?!&&p=3eae8bd3720e48e271ce2d51e0917e72c04f8043a97ee06337f1b855e8cc75f9JmltdHM9MTY1MzM2MTIyOCZpZ3VpZD0zNjIyNzRlOC04NzJhLTQ3MjAtYmJjNy05ZTdmOWNmNmIyYmYmaW5zaWQ9NTE1OQ&ptn=3&fclid=aa897e43-db0d-11ec-a78a-3915893ddad4&u=a1aHR0cHM6Ly9hZG1pbi52cmJvLmNvbS9oYW9kLw&ntb=1')
         print("Webpage reached...")
+
         cookieJar()
         credintals()
-        time.sleep(4)
+        time.sleep(3)
+
         download()
         time.sleep(10)
-
-
-
         convert()
+
+
+
+
+
 
 
 
@@ -104,9 +124,13 @@ def Main():
         create_workbook(r"C:\Users\harry\Desktop\Rstatements\Vrbo.xlsx")
 
 
-        read_file = pd.read_csv(r"C:\Users\harry\Desktop\Rstatements\Reservations.csv")
-        read_file.to_excel(r"C:\Users\harry\Desktop\Rstatements\Vrbo.xlsx", index=None, header=True)
-        
+        try:
+            read_file = pd.read_csv(r"C:\Users\harry\Desktop\Rstatements\Reservations.csv")
+            read_file.to_excel(r"C:\Users\harry\Desktop\Rstatements\Vrbo.xlsx", index=None, header=True)
+        except:
+            time.sleep(5)
+
+
 
 
 
@@ -130,7 +154,7 @@ def Main():
 
     def credintals():
         print(settings.LOGIN_USERNAME_FIELDVR)
-        login = WebDriverWait(driver, 10).until(
+        login1 = WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.XPATH, settings.LOGIN_USERNAME_FIELDVR))
         )
         print('hi')
@@ -144,8 +168,7 @@ def Main():
             EC.presence_of_element_located((By.XPATH, settings.LOGIN_BUTTONVR))
         )
 
-
-        login.send_keys(settings.USERNAMEVR)
+        login1.send_keys(settings.USERNAMEVR)
         password.send_keys(settings.PASSWORDVR)
         login_button.click()
 
@@ -175,6 +198,9 @@ def Main():
             return 'https://www.vrbo.com/rm/proxies/v2/conversations/export?afterDate=2022-06-10&beforeDate=2022-07-15&csrfToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbiI6IjEwY2IyMzE4NGZhZWNiN2ExN2FmMzdlN2NmMzJjOTlkMjFjYTFkMmVhMGRkMmQyNjRkYTBlMWU0NmI0YzY0ZjM5OGNiM2E4MTJmZDMyNTMxNDk0ZmZhODg1NWE4MGMyODkyMzM5MjNmYTlkZGZlYTNjNmM4MjkzMDU1ZTM1ODhjZjBkOGUxZjE1ZDQxMTEwMTcyYzRmMWMwZWVkMzg1ZTY3ZjdmMjhjNGI1YjNlODQ2Nzg3ZDVhOGI3YjJmZGI3OWJiYTE0NDFjY2YwNTg1IiwiaWF0IjoxNjU0NzMyMjM4LCJleHAiOjE2NTUzMzcwMzh9.njbcO9AQLoZlqbwkF80TcQdPo1yfH1aMbnLLzvEZw7U&druid=&reservations=true&site=homeaway_nz&status=RESERVATION_DOWNLOADABLE'
 
     login()
+    vrboformat.Main()
+
+
 
 
 

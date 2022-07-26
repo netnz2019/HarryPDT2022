@@ -2,6 +2,7 @@
 import csv
 import pickle
 import settings
+
 import format
 import requests
 from selenium import webdriver
@@ -20,6 +21,7 @@ import pickle
 from selenium.webdriver.chrome.options import Options
 from datetime import date
 
+
 def todaydate():
     return date.today()
 
@@ -28,7 +30,8 @@ def oneyear():
     return date.today().replace(year=date.today().year + 1)
 
 
-def Main(fro=todaydate(), to=oneyear()):
+def Main(debug=2, fro=todaydate(), to=oneyear()):
+    print("Booking.com")
 
     try:
         os.remove(r"C:\Users\harry\Desktop\Rstatements\rstatement.xls")
@@ -42,46 +45,70 @@ def Main(fro=todaydate(), to=oneyear()):
     chromedriver_location = "C:/Program Files (x86)/chromedriver.exe"
     # Mac path. May have to allow chromedriver developer in os system prefs
 
-
-    #chrome_options.add_argument("--headless")
+    if debug == 0:
+        chrome_options.add_argument("--headless")
+    else:
+        pass
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
+    chrome_options.add_argument(r"C:\Users\harry\Desktop\Rstatements\chrome_profiles\Default")
+    # chrome_options.add_argument('--user-data-dir=C://Rstatements\Default')
 
     chrome_prefs = {"download.default_directory": r"C:\Users\harry\Desktop\Rstatements"}  # (windows)
     chrome_options.experimental_options["prefs"] = chrome_prefs
 
     driver = webdriver.Chrome(chromedriver_location, options=chrome_options)
+
     def Cookie(cookie):
         driver.add_cookie(cookie)
 
     def login():
-        print(f'Logging in...')
-        driver.get(geturl(1))
-        print("Webpage reached...")
-        addcookies()
-        credintals()
+        try:
+            start = int(driver.current_url.find('ses'))
+            end = int(driver.current_url[start:].find('&')) + start
+            ses = str(driver.current_url[start + 4: end])
 
-        driver.get(geturl(2))
-        time.sleep(2)
+            startdate = fro
+            enddate = to
 
-        start = int(driver.current_url.find('ses'))
-        end = int(driver.current_url[start:].find('&')) + start
-        ses = str(driver.current_url[start + 4: end])
+            download_link = 'https://admin.booking.com/fresa/extranet/reservations/download?date_type=arrival&date_to=' + str(
+                enddate) + '&date_from=' + str(
+                startdate) + '&reservation_status[]=ok&lang=xu&ses=' + ses + '&hotel_id=554570'
+            print('downloading from: ' + download_link)
+            addcookies()
+            driver.get(download_link)
 
-        startdate = fro
-        enddate = to
+            Download(download_link)
+        except:
+            print(f'Logging in...')
+            driver.get(geturl(1))
+            print("Webpage reached...")
+            addcookies()
+            credintals()
 
-        download_link = 'https://admin.booking.com/fresa/extranet/reservations/download?date_type=arrival&date_to=' + str(enddate) + '&date_from=' + str(startdate) + '&reservation_status[]=ok&lang=xu&ses=' + ses + '&hotel_id=554570'
-        print('downloading from: ' + download_link)
-        driver.get(download_link)
+            driver.get(geturl(2))
+            time.sleep(2)
 
-        Download(download_link)
+            start = int(driver.current_url.find('ses'))
+            end = int(driver.current_url[start:].find('&')) + start
+            ses = str(driver.current_url[start + 4: end])
+
+            startdate = fro
+            enddate = to
+
+            download_link = 'https://admin.booking.com/fresa/extranet/reservations/download?date_type=arrival&date_to=' + str(
+                enddate) + '&date_from=' + str(
+                startdate) + '&reservation_status[]=ok&lang=xu&ses=' + ses + '&hotel_id=554570'
+            print('downloading from: ' + download_link)
+            driver.get(download_link)
+
+            Download(download_link)
+
+
 
         print('Successfully logged in!')
         format.main()
         return driver.get_cookies()
-
-
 
     def get_cookies():
         cookies = {}
@@ -103,18 +130,17 @@ def Main(fro=todaydate(), to=oneyear()):
         with open('test4.xls', 'wb') as output:
             output.write(response.content)
 
-
     def addcookies():
-        #Cookie({"name": 'bkng_sso_ses', "value": "e30"})
-        #Cookie({"name": 'auth_token', "value": "5380097289"})
-        #Cookie({"name": "bkng_sso_session", "value": "'e30'"})
-        #Cookie({"name": "bkng_bfp", "value": '2c0e1aa245bea2d0fc31f83d09399c67'})
-        #Cookie({"name": 'ecid', "value": 'zDFhjOTN7BG0pp0j1AwiRQsf'})
+        # Cookie({"name": 'bkng_sso_ses', "value": "e30"})
+        # Cookie({"name": 'auth_token', "value": "5380097289"})
+        # Cookie({"name": "bkng_sso_session", "value": "'e30'"})
+        # Cookie({"name": "bkng_bfp", "value": '2c0e1aa245bea2d0fc31f83d09399c67'})
+        # Cookie({"name": 'ecid', "value": 'zDFhjOTN7BG0pp0j1AwiRQsf'})
         Cookie({"name": 'hauavc', "value": '2EC81835QrxgZ7K4S1o4tCsRNco%2FMczXiGZIHAntIkAmTTGwG2c'})
-        #Cookie({"name": 'extranet_cors_js', "value": '1'})
-        #Cookie({"name": 'liteha',
-                #"value": '%5B%7B%22actions%22%3A%5B%5D%2C%22page%22%3A%22home%22%7D%2C%7B%22actions%22%3A%5B%5D%2C%22page%22%3A%22search_reservations%22%7D%5D'})
-        #Cookie({"name": '_ga', "value": 'GA1.2.1575159258.1651914208'})
+        # Cookie({"name": 'extranet_cors_js', "value": '1'})
+        # Cookie({"name": 'liteha',
+        # "value": '%5B%7B%22actions%22%3A%5B%5D%2C%22page%22%3A%22home%22%7D%2C%7B%22actions%22%3A%5B%5D%2C%22page%22%3A%22search_reservations%22%7D%5D'})
+        # Cookie({"name": '_ga', "value": 'GA1.2.1575159258.1651914208'})
         print("Cookies added 🍪🍪")
 
     def credintals():
@@ -152,17 +178,6 @@ def Main(fro=todaydate(), to=oneyear()):
         elif number == 2:
             return 'https://admin.booking.com/hotel/hoteladmin/extranet_ng/manage/search_reservations.html?source=nav&upcoming_reservations=1&hotel_id=554570&lang=xu&ses=850ac26632d089624d31f7080dec6c83&date_from=2022-05-13&date_to=2022-05-14&date_type=arrival'
 
-
-
-
-
-
     login()
-    import format
+
     format.main()
-    print(get_cookies())
-
-
-
-
-
