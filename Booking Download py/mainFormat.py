@@ -1,6 +1,10 @@
 
 import openpyxl
 import pandas as pd
+from openpyxl.styles import Font
+from openpyxl.styles import Alignment
+from openpyxl.styles import Border, Side
+from openpyxl.styles.borders import BORDER_THIN
 
 
 def main():
@@ -20,7 +24,27 @@ def main():
 
         for i in ws3["G2:G" + str(ws3.max_row)]:
             for v in i:
-                ws4.cell(row=v.row, column=2).value = v.value
+                if v.value != None:
+                    ws4.cell(row=v.row, column=2).value = v.value
+
+
+        for i in ws3["H2:H" + str(ws3.max_row)]:
+            for v in i:
+                if v.value != None:
+                    ws4.cell(row=v.row, column=3).value = v.value
+
+        for i in ws3["I2:I" + str(ws3.max_row)]:
+            for v in i:
+                if v.value != None:
+                    ws4.cell(row=v.row, column=4).value = v.value
+        for i in ws3["J2:J" + str(ws3.max_row)]:
+            for v in i:
+                if v.value != None:
+                    ws4.cell(row=v.row, column=5).value = v.value
+        for i in ws3["K2:K" + str(ws3.max_row)]:
+            for v in i:
+                if v.value != None:
+                    ws4.cell(row=v.row, column=6).value = v.value
         wb4.save(r"C:\Users\harry\Desktop\Rstatements\input.xlsx")
 
         wb3.save(r"C:\Users\harry\Desktop\Rstatements\output.xlsx")
@@ -87,15 +111,16 @@ def main():
     ws3.delete_cols(1)
 
     def nights():
-        for i in range(2, ws3.max_row - 1):
-            cell = ws3.cell(row=i, column=5)
+        for i in range(1, ws3.max_row - 1):
+            cell = ws3.cell(row=i+1, column=5)
             e = i
-            print(i)
-            e = str(e)
+
+            e = str(e+1)
             # print(e)
+
             cell.value = "=SUM(D" + e + "-C" + e + ")"
 
-    nights()
+
 
     for i in range(ws3.max_row):
         cell = ws3.cell(row=i + 1, column=2)
@@ -105,7 +130,40 @@ def main():
         if next == now:
             ws3.delete_rows(i + 2)
     guest = {}
+
+    thin_border = Border(left=Side(style='thin'),
+                         right=Side(style='thin'),
+                         top=Side(style='thin'),
+                         bottom=Side(style='thin'))
+    def collums(name, collum):
+        ws3.cell(row=1, column=collum).value = name
+        ws3.cell(row=1, column=collum).font = Font(bold=True)
+        ws3.cell(row=1, column=collum).alignment = Alignment(horizontal='center')
+        ws3.cell(row=1, column=collum).border = thin_border
+
+
+
+
+
+    collums("Country", 9)
+    collums("Phone", 10)
+    collums("Room", 11)
+    collums("Notes", 12)
+
+    ws3.column_dimensions["A"].width = 10
+    ws3.column_dimensions["B"].width = 25
+    ws3.column_dimensions["C"].width = 10
+    ws3.column_dimensions["D"].width = 10
+    ws3.column_dimensions["D"].width = 10
+    ws3.column_dimensions["I"].width = 20
+    ws3.column_dimensions["J"].width = 15
+    ws3.column_dimensions["K"].width = 15
+    ws3.column_dimensions["L"].width = 30
+
+
+
     wb3.save(r"C:\Users\harry\Desktop\Rstatements\output2.xlsx")
+
 
     wb4 = openpyxl.load_workbook(r"C:\Users\harry\Desktop\Rstatements\input.xlsx")
     ws4 = wb4.active
@@ -125,10 +183,14 @@ def main():
                         print("Hi")
 
                         if ws4.cell(row=val.row, column=2).value != None:
-                            print("Gay")
+                            print("found")
 
 
                             ws3.cell(row=v.row, column=8).value = ws4.cell(row=val.row, column=2).value
+                            ws3.cell(row=v.row, column=9).value = ws4.cell(row=val.row, column=3).value
+                            ws3.cell(row=v.row, column=10).value = ws4.cell(row=val.row, column=4).value
+                            ws3.cell(row=v.row, column=11).value = ws4.cell(row=val.row, column=5).value
+                            ws3.cell(row=v.row, column=12).value = ws4.cell(row=val.row, column=6).value
 
 
 
@@ -140,7 +202,7 @@ def main():
 
 
 
-
+    nights()
     wb3.save(r"C:\Users\harry\Desktop\Rstatements\output.xlsx")
 
 
