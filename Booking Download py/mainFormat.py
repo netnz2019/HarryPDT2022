@@ -1,4 +1,12 @@
+#Takes and XL file and sorts by date, adds the number of nights the guest are staying.
+#Removes the NZD beside the price to make is a Float rather than a string so it can be recoognised by Excel
+#Scans for chages made by the user and saves those to another Xl file, then once the coputer has done its thing,
+#The user inputs are added back to the file.
+#Gerneral formating, font, borders, alingment.
+#Saves to Output.xlsx
 
+
+#Imports
 import openpyxl
 import pandas as pd
 from openpyxl.styles import Font
@@ -7,11 +15,14 @@ from openpyxl.styles import Border, Side
 from openpyxl.styles.borders import BORDER_THIN
 
 
+#Main function
 def main():
     wb3 = openpyxl.load_workbook(r"C:\Users\harry\Desktop\Rstatements\output.xlsx")
     ws3 = wb3.active
     ws3.delete_cols(1)
     wb3.save(r"C:\Users\harry\Desktop\Rstatements\output.xlsx")
+
+    #saves User inputs
     def save():
         wb3 = openpyxl.load_workbook(r"C:\Users\harry\Desktop\Rstatements\output.xlsx")
         ws3 = wb3.active
@@ -50,7 +61,9 @@ def main():
         wb3.save(r"C:\Users\harry\Desktop\Rstatements\output.xlsx")
     save()
 
-    print("we going")
+
+    #Adds moo.xlsx to formbook.xlsx and sorts by date of arrival
+    #Then this is added to output.xlsx overwriting everything.
     wb1 = openpyxl.load_workbook(r'C:\Users\harry\Desktop\Rstatements\moo.xlsx')
     wb2 = openpyxl.load_workbook(r"C:\Users\harry\Desktop\Rstatements\formbook.xlsx")
 
@@ -110,6 +123,9 @@ def main():
     ws3 = wb3.active
     ws3.delete_cols(1)
 
+
+    #Adds the numbe of nights the guest is satying by subtractiong the dat of arrival from
+    #the date of departure
     def nights():
         for i in range(1, ws3.max_row - 1):
             cell = ws3.cell(row=i+1, column=5)
@@ -131,11 +147,15 @@ def main():
             ws3.delete_rows(i + 2)
     guest = {}
 
+
+    #Defines Border style
     thin_border = Border(left=Side(style='thin'),
                          right=Side(style='thin'),
                          top=Side(style='thin'),
                          bottom=Side(style='thin'))
-    def collums(name, collum):
+
+    #Formats Collumns
+    def columns(name, collum):
         ws3.cell(row=1, column=collum).value = name
         ws3.cell(row=1, column=collum).font = Font(bold=True)
         ws3.cell(row=1, column=collum).alignment = Alignment(horizontal='center')
@@ -145,11 +165,12 @@ def main():
 
 
 
-    collums("Country", 9)
-    collums("Phone", 10)
-    collums("Room", 11)
-    collums("Notes", 12)
+    columns("Country", 9)
+    columns("Phone", 10)
+    columns("Room", 11)
+    columns("Notes", 12)
 
+    #Changes Cell dimensions
     ws3.column_dimensions["A"].width = 10
     ws3.column_dimensions["B"].width = 25
     ws3.column_dimensions["C"].width = 10
@@ -168,29 +189,27 @@ def main():
     wb4 = openpyxl.load_workbook(r"C:\Users\harry\Desktop\Rstatements\input.xlsx")
     ws4 = wb4.active
 
+
+    #Adds user inputs back to output.xlsx
     for cell in ws3["B1:B"+str(ws3.max_row)]:
-        for v in cell:
-            name=str(v.value)
-            #print(name)
-
-            for va in ws4["A1:A"+str(ws4.max_row)]:
-                for val in va:
-                    #print("Val " + str(val.value))
-                    #print(str(val.value) + ": " + name)
-                    #print(name)
-                    #print(v.value)
-                    if val.value == name:
-                        print("Hi")
-
-                        if ws4.cell(row=val.row, column=2).value != None:
-                            print("found")
+        for outputValue in cell:
+            name=str(outputValue.value)
 
 
-                            ws3.cell(row=v.row, column=8).value = ws4.cell(row=val.row, column=2).value
-                            ws3.cell(row=v.row, column=9).value = ws4.cell(row=val.row, column=3).value
-                            ws3.cell(row=v.row, column=10).value = ws4.cell(row=val.row, column=4).value
-                            ws3.cell(row=v.row, column=11).value = ws4.cell(row=val.row, column=5).value
-                            ws3.cell(row=v.row, column=12).value = ws4.cell(row=val.row, column=6).value
+            for inputNames in ws4["A1:A"+str(ws4.max_row)]:
+                for inputValues in inputNames:
+                    #If output name == saved name:
+                    if inputValues.value == name:
+                        #If cell not empty
+                        if ws4.cell(row=inputValues.row, column=2).value != None:
+
+
+                            #add data
+                            ws3.cell(row=outputValue.row, column=8).value = ws4.cell(row=inputValues.row, column=2).value
+                            ws3.cell(row=outputValue.row, column=9).value = ws4.cell(row=inputValues.row, column=3).value
+                            ws3.cell(row=outputValue.row, column=10).value = ws4.cell(row=inputValues.row, column=4).value
+                            ws3.cell(row=outputValue.row, column=11).value = ws4.cell(row=inputValues.row, column=5).value
+                            ws3.cell(row=outputValue.row, column=12).value = ws4.cell(row=inputValues.row, column=6).value
 
 
 

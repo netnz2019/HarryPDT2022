@@ -1,5 +1,7 @@
-from openpyxl import load_workbook
+#Formats the incoming Files from vrbo.com to the universal formate so it can be
+#combined with the files coming from booking.com
 
+from openpyxl import load_workbook
 import pyexcel as p
 from copy import copy
 import os
@@ -8,16 +10,6 @@ import os
 def Main():
     def delete_col(ws, column_id):
         ws.delete_cols(column_id)
-
-    def nights():
-        for i in range(ws.max_row):
-            cell = ws.cell(row=i + 2, column=5)
-            e = i + 2
-            e = str(e)
-            # print(e)
-            cell.value = "=SUM(D" + e + "-C" + e + ")"
-
-
 
     try:
         os.remove(r'C:\Users\harry\Desktop\Rstatements\moo.xlsx')
