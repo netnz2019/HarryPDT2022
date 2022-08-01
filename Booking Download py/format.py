@@ -1,13 +1,10 @@
-import openpyxl.cell
-import openpyxl
-
+#Takes the booking.com spreadsheet and formats it to the universal formate
 from openpyxl import load_workbook
-
 import pyexcel as p
-from copy import copy
 import os
 
 def main():
+    #opens excel files
     p.save_book_as(file_name=r'C:\Users\harry\Desktop\Rstatements\rstatement.xls',
                    dest_file_name=r'C:\Users\harry\Desktop\Rstatements\booking_com.xlsx')
 
@@ -22,8 +19,9 @@ def main():
             cell = ws.cell(row=1, column=i)
             cell.font = cell.font.copy(bold=True)
 
+    #Removes the NZD after the prices and then coverts the string to a float
     def removenzd():
-        for i in range(ws.max_row - 2):
+        for i in range(ws.max_row - 1):
             # print(i)
             cell = ws.cell(row=i + 2, column=8)
             val = cell.value
@@ -32,17 +30,16 @@ def main():
                 pass
             else:
                 space = val.index(" ")
-                # print(space)
+
 
                 nzdremoved = val[:space]
-                print(nzdremoved)
                 cell.value = float(nzdremoved)
 
     try:
         os.remove(r'C:\Users\harry\Desktop\Rstatements\formbook.xlsx')
     except:
         pass
-
+    #removes unnecessary columns
     wb = load_workbook(r'C:\Users\harry\Desktop\Rstatements\booking_com.xlsx')
     ws = wb.active
     delete_col(ws, 1)
@@ -53,7 +50,7 @@ def main():
     delete_col(ws, 9)
 
     ws.insert_cols(1)
-
+    #Moves Columns round
     max = ws.max_row
     print(max)
     coll = "E" + str(max)
@@ -69,5 +66,6 @@ def main():
     print(nz.value)
     removenzd()
     tobold({1, 2, 3, 4, 5, 6, 7, 8})
+    #saves file
     wb.save(r"C:\Users\harry\Desktop\Rstatements\formbook.xlsx")
 
