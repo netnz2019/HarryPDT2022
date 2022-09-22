@@ -1,6 +1,6 @@
 #Takes and XL file and sorts by date, adds the number of nights the guest are staying.
 #Removes the NZD beside the price to make is a Float rather than a string so it can be recoognised by Excel
-#Scans for chages made by the user and saves those to another Xl file, then once the coputer has done its thing,
+#Scans for chages made by the user and saves those to another Xl file, then once the computer has done its thing,
 #The user inputs are added back to the file.
 #Gerneral formating, font, borders, alingment.
 #Saves to Output.xlsx

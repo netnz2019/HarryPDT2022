@@ -1,4 +1,4 @@
-#Takes the booking.com spreadsheet and formats it to the universal formate
+#Takes the booking.com spreadsheet and formats it to the universal format
 from openpyxl import load_workbook
 import pyexcel as p
 import os
