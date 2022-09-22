@@ -15,16 +15,21 @@ from openpyxl.styles import Border, Side
 from openpyxl.styles.borders import BORDER_THIN
 
 
+
 #Main function
-def main():
-    wb3 = openpyxl.load_workbook(r"C:\Users\harry\Desktop\Rstatements\output.xlsx")
+def main(custom):
+    if custom == True:
+        output = r"C:\Users\harry\Desktop\Rstatements\custom.xlsx"
+    else:
+        output = r"C:\Users\harry\Desktop\Rstatements\output.xlsx"
+    wb3 = openpyxl.load_workbook(output)
     ws3 = wb3.active
     ws3.delete_cols(1)
-    wb3.save(r"C:\Users\harry\Desktop\Rstatements\output.xlsx")
+    wb3.save(output)
 
     #saves User inputs
     def save():
-        wb3 = openpyxl.load_workbook(r"C:\Users\harry\Desktop\Rstatements\output.xlsx")
+        wb3 = openpyxl.load_workbook(output)
         ws3 = wb3.active
         wb4 = openpyxl.load_workbook(r"C:\Users\harry\Desktop\Rstatements\input.xlsx")
         ws4 = wb4.active
@@ -58,7 +63,7 @@ def main():
                     ws4.cell(row=v.row, column=6).value = v.value
         wb4.save(r"C:\Users\harry\Desktop\Rstatements\input.xlsx")
 
-        wb3.save(r"C:\Users\harry\Desktop\Rstatements\output.xlsx")
+        wb3.save(output)
     save()
 
 
@@ -72,7 +77,7 @@ def main():
 
     ws2max = ws2.max_row
     maxcol = str(ws1.max_row)
-    print(maxcol)
+    #print(maxcol)
 
     x = ws2max
     y = 0
@@ -115,11 +120,11 @@ def main():
     df = xl.parse("Sheet1")
     df = df.sort_values("Check-in")
 
-    writer = pd.ExcelWriter(r"C:\Users\harry\Desktop\Rstatements\output.xlsx")
+    writer = pd.ExcelWriter(output)
     df.to_excel(writer, sheet_name='Sheet1')
     writer.save()
 
-    wb3 = openpyxl.load_workbook(r"C:\Users\harry\Desktop\Rstatements\output.xlsx")
+    wb3 = openpyxl.load_workbook(output)
     ws3 = wb3.active
     ws3.delete_cols(1)
 
@@ -222,6 +227,7 @@ def main():
 
 
     nights()
-    wb3.save(r"C:\Users\harry\Desktop\Rstatements\output.xlsx")
+    wb3.save(output)
+
 
 

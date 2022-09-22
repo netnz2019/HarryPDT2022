@@ -1,7 +1,9 @@
+#MainWindow is used to run the GUI, and execute the other files as needed
+#MainWindow also contians import aspects of the program such as boundry checking
+#and some final formating. the
 #Imports
 from time import *
 from threading import *
-
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 import main
@@ -20,7 +22,7 @@ ws = wb1.active
 #Number of Bookings
 bookings = ws.max_row
 
-#Gets current Date
+#Gets current Date and checks if any guests check in on the current date
 date = date.today()
 list = []
 for i in range(2,5):
@@ -29,11 +31,12 @@ for i in range(2,5):
 
 
 
-#GUI Main Class
+#GUI Main Class(Computer Generated)
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(800, 600)
+        self.custom_date = None
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.gridLayout_6 = QtWidgets.QGridLayout(self.centralwidget)
@@ -83,9 +86,13 @@ class Ui_MainWindow(object):
         self.verticalLayout_11 = QtWidgets.QVBoxLayout()
         self.verticalLayout_11.setObjectName("verticalLayout_11")
         self.checkin = QtWidgets.QDateEdit(self.tab_7)
+        self.checkin.setCalendarPopup(True)
+        self.checkin.setDate(QtCore.QDate(2022, 1, 1))
         self.checkin.setObjectName("checkin")
         self.verticalLayout_11.addWidget(self.checkin)
         self.checkout = QtWidgets.QDateEdit(self.tab_7)
+        self.checkout.setCalendarPopup(True)
+        self.checkout.setDate(QtCore.QDate(2022, 1, 1))
         self.checkout.setObjectName("checkout")
         self.verticalLayout_11.addWidget(self.checkout)
         self.verticalLayout_7.addLayout(self.verticalLayout_11)
@@ -209,9 +216,11 @@ class Ui_MainWindow(object):
         self.tab_8 = QtWidgets.QWidget()
         self.tab_8.setObjectName("tab_8")
         self.comboBox = QtWidgets.QComboBox(self.tab_8)
-        self.comboBox.setGeometry(QtCore.QRect(30, 40, 200, 26))
-        self.comboBox.setCurrentText("")
+        self.comboBox.setGeometry(QtCore.QRect(30, 40, 131, 22))
         self.comboBox.setObjectName("comboBox")
+        self.comboBox.addItem("")
+        self.comboBox.addItem("")
+        self.comboBox.addItem("")
         self.label = QtWidgets.QLabel(self.tab_8)
         self.label.setGeometry(QtCore.QRect(10, 90, 91, 16))
         self.label.setStyleSheet(
@@ -231,7 +240,7 @@ class Ui_MainWindow(object):
         self.label_5.setGeometry(QtCore.QRect(40, 250, 51, 16))
         self.label_5.setObjectName("label_5")
         self.label_6 = QtWidgets.QLabel(self.tab_8)
-        self.label_6.setGeometry(QtCore.QRect(110, 90, 200, 16))
+        self.label_6.setGeometry(QtCore.QRect(110, 90, 81, 16))
         self.label_6.setObjectName("label_6")
         self.label_8 = QtWidgets.QLabel(self.tab_8)
         self.label_8.setGeometry(QtCore.QRect(110, 130, 91, 16))
@@ -246,7 +255,7 @@ class Ui_MainWindow(object):
         self.label_12.setGeometry(QtCore.QRect(110, 250, 111, 20))
         self.label_12.setObjectName("label_12")
         self.label_14 = QtWidgets.QLabel(self.tab_8)
-        self.label_14.setGeometry(QtCore.QRect(290, 40, 200, 31))
+        self.label_14.setGeometry(QtCore.QRect(290, 40, 111, 31))
         self.label_14.setStyleSheet("font: 20pt \"MS Shell Dlg 2\";\n"
                                     "font: 87 8pt \"Segoe UI Black\";\n"
                                     "font: 14pt \"MS Shell Dlg 2\";\n"
@@ -290,7 +299,7 @@ class Ui_MainWindow(object):
         MainWindow.setStatusBar(self.statusbar)
 
         self.retranslateUi(MainWindow)
-        self.tabWidget.setCurrentIndex(1)
+        self.tabWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
 
@@ -341,7 +350,7 @@ class Ui_MainWindow(object):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
         self.radioButton_4.setText(_translate("MainWindow", "Booking.com"))
-        self.pushButton.setText(_translate("MainWindow", "PushButton"))
+        self.pushButton.setText(_translate("MainWindow", "Download"))
         self.can.setText(_translate("MainWindow", "Cancelations"))
         self.cus.setText(_translate("MainWindow", "Custom Dates"))
         self.debug.setText(_translate("MainWindow", "Headed Debugging"))
@@ -377,6 +386,7 @@ class Ui_MainWindow(object):
         self.label_4.setText(_translate("MainWindow", "Nights:"))
         self.label_5.setText(_translate("MainWindow", "Price:"))
 
+
         #Adds Guest names to Combobox on Guest Info Page
         for i in ws["B1:B"+ str(ws.max_row)]:
             for cell in i:
@@ -385,16 +395,41 @@ class Ui_MainWindow(object):
 
     #Multithreading for download to prevent crashing
     def thread(self):
+        print("Hi")
+        self.checkindate = None
+        self.checkoutdate = None
+        self.custom = False
+        print(str(self.checkin.date().toPyDate()))
+        checkindatetime = datetime.strptime(str(self.checkin.date().toPyDate()), "%Y-%m-%d")
+        checkoutdatetime = datetime.strptime(str(self.checkout.date().toPyDate()), "%Y-%m-%d")
+        valid = checkindatetime - checkoutdatetime
+        print(self.cus.checkState())
+        let = str(valid)[0]
+
+        if self.cus.checkState() == 2:
+            if let == "-":
+                print("less")
+                cyear = str(self.checkin.date().year())
+                cmonth = str(self.checkin.date().month())
+                cday = str(self.checkin.date().day())
+                self.checkindate = cyear + "-" + cmonth + "-" + cday
+                oyear = str(self.checkout.date().year())
+                omonth = str(self.checkout.date().month())
+                oday = str(self.checkout.date().day())
+                self.checkoutdate = oyear + "-" + omonth + "-" + oday
+                print(self.checkoutdate + self.checkindate)
+                self.custom = True
+
         t1 = Thread(target=self.Operation)
         t1.start()
 
     def Operation(self):
         lastupdate = os.path.getmtime(r"C:\Users\harry\Desktop\Rstatements\moo.xlsx")
-        thread4 = Thread(target=main.Main(self.debug.checkState()))
-        thread3 = Thread(target=vrbo.Main(self.debug.checkState()))
+        thread4 = Thread(target=main.Main(self.debug.checkState(), self.checkindate, self.checkoutdate))
+        thread3 = Thread(target=vrbo.Main(self.debug.checkState(), self.checkindate, self.checkoutdate))
         thread3.start()
         thread4.start()
-        threa5 = Thread(target=mainFormat.main())
+        threa5 = Thread(target=mainFormat.main(self.custom))
         threa5.start()
 
     #Multithreading for saving inputs to prevent crashing
@@ -438,6 +473,7 @@ class Ui_MainWindow(object):
                     if price != "":
                         if int(price) > 10000:
                             self.lineEdit_3.setPlaceholderText("To Rich")
+                            time.sleep(3)
                             self.lineEdit_3.setText("")
                         else:
                             ws.cell(row=val.row, column=8).value = int(price)

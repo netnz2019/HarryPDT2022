@@ -1,6 +1,7 @@
 #Logs into VRBO, uses cookies to bypass the 2 factor authentication.
 #Downloads the Booking information using a url.
 #Converts the csv to xlsx
+#sends output to vrboformat.py
 
 import settings
 from openpyxl import Workbook
@@ -18,8 +19,8 @@ import pickle
 from selenium.webdriver.chrome.options import Options
 from datetime import date
 
-
-def Main(debug=2):
+custom=False
+def Main(debug=0, checkin=None, checkout=None):
     #Deletes older version
     try:
         os.remove(r"C:\Users\harry\Desktop\Rstatements\Reservations.csv")
@@ -70,17 +71,28 @@ def Main(debug=2):
         credintals()
         time.sleep(3)
         #Downloads Data
-        download()
+        download(checkin, checkout)
         time.sleep(10)
         #Converts to xlsx
         convert()
 
 
 
-    def download():
-        today = date.today()
+    def download(CheckIn=None, checkOut=None):
 
+        today = date.today()
         oneyear = date.today().replace(year=date.today().year + 1)
+
+        if CheckIn != None:
+            today = CheckIn
+            oneyear = checkOut
+            custom = True
+
+        if date.today().month >7:
+            print("Hi")
+
+
+
 
         print(date.today())
         driver.get('https://www.vrbo.com/rm/proxies/v2/conversations/export?afterDate='+ str(today) + '&beforeDate='+ str(oneyear) + '&csrfToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbiI6IjEwY2IyMzE4NGZhZWNiN2ExN2FmMzdlN2NmMzJjOTlkMjFjYTFkMmVhMGRkMmQyNjRkYTBlMWU0NmI0YzY0ZjM5OGNiM2E4MTJmZDMyNTMxNDk0ZmZhODg1NWE4MGMyODkyMzM5MjNmYTlkZGZlYTNjNmM4MjkzMDU1ZTM1ODhjZjBkOGUxZjE1ZDQxMTEwMTcyYzRmMWMwZWVkMzg1ZTY3ZjdmMjhjNGI1YjNlODQ2Nzg3ZDVhOGI3YjJmZGI3OWJiYTE0NDFjY2YwNTg1IiwiaWF0IjoxNjU0NzMyMjM4LCJleHAiOjE2NTUzMzcwMzh9.njbcO9AQLoZlqbwkF80TcQdPo1yfH1aMbnLLzvEZw7U&druid=&reservations=true&site=homeaway_nz&status=RESERVATION_DOWNLOADABLE')
@@ -161,6 +173,7 @@ def Main(debug=2):
 
     login()
     vrboformat.Main()
+
 
 
 

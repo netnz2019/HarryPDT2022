@@ -1,3 +1,7 @@
+#Logs into Booking.com, uses cookies to bypass the 2 factor authentication.
+#Downloads the Booking information using a url.
+#Converts the xls to xlsx
+#sends output to format.py
 
 import settings
 import format
@@ -21,7 +25,7 @@ def oneyear():
     return date.today().replace(year=date.today().year + 1)
 
 
-def Main(debug=2, fro=todaydate(), to=oneyear()):
+def Main(debug=2, check_in=None, check_out=None, fro=todaydate(), to=oneyear()):
     print("Booking.com")
 
     try:
@@ -86,6 +90,10 @@ def Main(debug=2, fro=todaydate(), to=oneyear()):
 
             startdate = fro
             enddate = to
+            if check_in != None:
+                startdate = check_in
+                enddate = check_out
+                custom = True
 
             download_link = 'https://admin.booking.com/fresa/extranet/reservations/download?date_type=arrival&date_to=' + str(
                 enddate) + '&date_from=' + str(
